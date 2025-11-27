@@ -1,7 +1,7 @@
 // src/components/MovingBanner.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Facebook, X, Instagram, Linkedin, Github, MessageCircle, Mail, Phone } from 'lucide-react';
 
 const MovingBanner = () => {
@@ -62,8 +62,39 @@ const MovingBanner = () => {
     };
   }, [setIsVisible]); // Add setIsVisible to dependency array
 
+  // Create a container element to detect mouse proximity
+  const bannerContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (bannerContainerRef.current) {
+        const rect = bannerContainerRef.current.getBoundingClientRect();
+
+        // Calculate distance between mouse and banner container
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const distance = Math.sqrt(
+          Math.pow(e.clientX - centerX, 2) +
+          Math.pow(e.clientY - centerY, 2)
+        );
+
+        // Show banner if mouse is within 200px radius
+        if (distance < 200) {
+          setIsVisible(true);
+        }
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+
   return (
     <div
+      ref={bannerContainerRef}
       className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 ${
         isVisible
           ? 'opacity-100 translate-y-0'
