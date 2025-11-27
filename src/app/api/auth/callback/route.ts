@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm';
 import { validateLoginCredentials, validateAndSanitizeEmail } from '@/lib/validation';
 import { authRateLimiter } from '@/lib/rateLimit';
 import { formatErrorResponse, AuthenticationError, RateLimitError } from '@/lib/errorHandler';
-import { users } from '../../../../drizzle/schema';
+import { users } from '../../../../../drizzle/schema';
 
 export async function POST(request: NextRequest) {
   try {
