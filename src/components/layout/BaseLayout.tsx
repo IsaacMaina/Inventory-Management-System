@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 import UserDropdown from '@/components/UserDropdown';
+import MovingBanner from '@/components/MovingBanner';
 
 interface BaseLayoutProps {
   children: React.ReactNode;
@@ -71,6 +72,9 @@ const BaseLayout = ({ children }: BaseLayoutProps) => {
         <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-gradient-to-br from-gray-900 to-gray-800">
           {children}
         </main>
+
+        {/* Moving contact banner */}
+        <MovingBanner />
       </div>
     </div>
   );
