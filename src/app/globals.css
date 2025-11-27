@@ -1,0 +1,315 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f0f8f3; /* Soft green background (like Kenya's landscape) */
+  --foreground: #0a2c18; /* Deep dark green for high contrast text */
+  --card: #ffffff;
+  --card-foreground: #0a2c18; /* High contrast text on cards */
+  --primary: #006633; /* Kenya's green */
+  --primary-foreground: #ffffff;
+  --secondary: #e6f4ec; /* Light green */
+  --secondary-foreground: #0a2c18;
+  --accent: #f8f0e5; /* Beige, like savannah */
+  --accent-foreground: #0a2c18;
+  --destructive: #d9534f; /* Red */
+  --destructive-foreground: #ffffff;
+  --muted: #e2e8f0;
+  --muted-foreground: #64748b;
+  --border: #cbd5e1;
+  --input: #cbd5e1;
+  --ring: #006633;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: #0f1117;
+  --foreground: #e2e8f0;
+  --card: #1a1c23;
+  --card-foreground: #e2e8f0;
+  --primary: #60a5fa;
+  --primary-foreground: #0f1117;
+  --secondary: #334155;
+  --secondary-foreground: #e2e8f0;
+  --accent: #1e293b;
+  --accent-foreground: #e2e8f0;
+  --destructive: #7f1d1d;
+  --destructive-foreground: #f8fafc;
+  --muted: #334155;
+  --muted-foreground: #94a3b8;
+  --border: #334155;
+  --input: #334155;
+  --ring: #60a5fa;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius: var(--radius);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans);
+  transition: background-color, color 0.3s ease;
+}
+
+/* Ensure all text elements have proper contrast in light theme */
+.light {
+  color: var(--foreground);
+}
+
+.light h1,
+.light h2,
+.light h3,
+.light h4,
+.light h5,
+.light h6 {
+  color: var(--foreground);
+}
+
+.light .text-muted-foreground {
+  color: var(--muted-foreground) !important;
+}
+
+.light .border {
+  border-color: var(--border);
+}
+
+.light .bg-gray-700 {
+  background-color: var(--secondary) !important;
+}
+
+.light .bg-gray-800 {
+  background-color: var(--card) !important;
+}
+
+.light .text-gray-100,
+.light .text-gray-200,
+.light .text-gray-300 {
+  color: var(--foreground) !important;
+}
+
+.light .text-gray-400 {
+  color: var(--muted-foreground) !important;
+}
+
+.light .placeholder-gray-400 {
+  color: var(--muted-foreground) !important;
+}
+
+/* Ensure form elements have proper styling in light mode */
+.light input,
+.light textarea,
+.light select {
+  background-color: var(--card);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.light input::placeholder,
+.light textarea::placeholder {
+  color: var(--muted-foreground);
+}
+
+/* Additional light theme overrides for better contrast */
+.light .bg-gray-900 {
+  background-color: var(--card) !important;
+}
+
+.light .text-gray-900 {
+  color: var(--foreground) !important;
+}
+
+.light .bg-slate-900 {
+  background-color: var(--card) !important;
+}
+
+.light .text-slate-900 {
+  color: var(--foreground) !important;
+}
+
+.light .bg-gradient-to-br {
+  background: linear-gradient(135deg, #f0f8f3 0%, #e6f4ec 100%) !important;
+}
+
+/* Navigation background to match page background */
+.light .bg-gray-900 {
+  background-color: var(--background) !important;
+}
+
+.light .bg-slate-900 {
+  background-color: var(--background) !important;
+}
+
+.light .bg-gray-800 {
+  background-color: var(--background) !important;
+}
+
+/* Sidebar navigation styling - make it match page background */
+.light .bg-gray-900\/50 {
+  background-color: var(--background) !important;
+}
+
+.light .bg-gray-900\/90 {
+  background-color: var(--background) !important;
+}
+
+.light .bg-gray-900\/70 {
+  background-color: var(--background) !important;
+}
+
+/* Navigation header styling */
+.light header {
+  background-color: var(--background) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+.light .bg-gray-900\/50 .bg-gray-900 {
+  background-color: var(--background) !important;
+}
+
+/* Sidebar and navigation background to match page */
+.light .min-h-screen {
+  background-color: var(--background) !important;
+}
+
+.light .bg-gray-900\/50 {
+  background: var(--background) !important;
+}
+
+.light .bg-gray-900\/70 {
+  background: var(--background) !important;
+}
+
+.light .bg-gray-900\/90 {
+  background: var(--background) !important;
+}
+
+.light .backdrop-blur-xl,
+.light .bg-gray-900\/50.backdrop-blur-xl {
+  background: color-mix(in srgb, var(--background) 100%, transparent) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+.light .backdrop-blur-md,
+.light .bg-gray-900\/50.backdrop-blur-md {
+  background: color-mix(in srgb, var(--background) 100%, transparent) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* Ensure link colors have proper contrast */
+.light a {
+  color: var(--primary);
+}
+
+.light a:hover {
+  color: #005229; /* Darker shade of Kenya green */
+}
+
+/* Glassmorphism classes */
+.glass {
+  background: rgba(240, 248, 243, 0.7); /* Match the new background */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 102, 51, 0.15); /* Match primary green */
+  box-shadow: 0 8px 32px 0 rgba(0, 102, 51, 0.05);
+}
+
+.light .glass {
+  background: rgba(240, 248, 243, 0.7);
+  border: 1px solid rgba(0, 102, 51, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 102, 51, 0.05);
+}
+
+.dark .glass {
+  background: rgba(30, 30, 36, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced gradient text */
+.gradient-text {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% auto;
+  animation: shine 3s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Animated border */
+.animated-border {
+  position: relative;
+}
+
+.animated-border::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  transition: width 0.3s ease;
+}
+
+.animated-border:hover::after {
+  width: 100%;
+}
+
+/* Enhanced card hover effect */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Subtle gradient backgrounds */
+.bg-gradient-subtle {
+  background: linear-gradient(135deg, rgba(0, 102, 51, 0.1) 0%, rgba(230, 244, 236, 0.1) 100%); /* Kenya green theme */
+}
+
+.light .bg-gradient-subtle {
+  background: linear-gradient(135deg, rgba(0, 102, 51, 0.1) 0%, rgba(230, 244, 236, 0.1) 100%);
+}
+
+.dark .bg-gradient-subtle {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+}
+
+/* Wave animation for skeleton loading */
+@keyframes wave {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
