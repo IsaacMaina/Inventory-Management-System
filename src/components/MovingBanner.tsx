@@ -6,6 +6,7 @@ import { Facebook, X, Instagram, Linkedin, Github, MessageCircle, Mail, Phone } 
 
 const MovingBanner = () => {
   const [isVisible, setIsVisible] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
 
   const socialLinks = [
     { href: "https://web.facebook.com/profile.php?id=61576682944507", icon: <Facebook size={20} />, label: "Facebook", username: "DevIsaacMaina" },
@@ -27,7 +28,9 @@ const MovingBanner = () => {
 
     // Function to handle user activity
     const handleActivity = () => {
-      setIsVisible(false); // Hide immediately when user interacts
+      if (!isHovered) { // Only hide if not currently hovering over the banner
+        setIsVisible(false); // Hide immediately when user interacts
+      }
 
       // Clear the previous inactivity timer if it exists
       if (inactivityTimer) {
@@ -36,7 +39,9 @@ const MovingBanner = () => {
 
       // Set a new timeout to show the banner after inactivity
       inactivityTimer = setTimeout(() => {
-        setIsVisible(true); // Show the banner after 5 seconds of inactivity
+        if (!isHovered) { // Only show if not hovering over the banner
+          setIsVisible(true); // Show the banner after 5 seconds of inactivity
+        }
       }, 5000); // Show after 5 seconds of inactivity
     };
 
@@ -47,7 +52,9 @@ const MovingBanner = () => {
 
     // Initialize timer to show banner after 100ms initially
     inactivityTimer = setTimeout(() => {
-      setIsVisible(true);
+      if (!isHovered) {
+        setIsVisible(true);
+      }
     }, 100); // Show after 100ms initially
 
     // Cleanup function to remove event listeners and clear timer
@@ -60,26 +67,26 @@ const MovingBanner = () => {
         clearTimeout(inactivityTimer);
       }
     };
-  }, [setIsVisible]); // Add setIsVisible to dependency array
+  }, [setIsVisible, isHovered]); // Add setIsVisible and isHovered to dependency array
 
   // Create a container element to detect mouse proximity
   const bannerContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (bannerContainerRef.current) {
+      if (bannerContainerRef.current && !isHovered) { // Only trigger if not already hovering over the banner
         const rect = bannerContainerRef.current.getBoundingClientRect();
 
-        // Calculate distance between mouse and banner container
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const distance = Math.sqrt(
-          Math.pow(e.clientX - centerX, 2) +
-          Math.pow(e.clientY - centerY, 2)
-        );
+        // Calculate if mouse is within or near the banner container
+        // Use the bounding box with some padding instead of distance from center
+        const padding = 20; // Add padding around the banner
+        const isNearBanner =
+          e.clientX >= rect.left - padding &&
+          e.clientX <= rect.right + padding &&
+          e.clientY >= rect.top - padding &&
+          e.clientY <= rect.bottom + padding;
 
-        // Show banner if mouse is within 200px radius
-        if (distance < 200) {
+        if (isNearBanner) {
           setIsVisible(true);
         }
       }
@@ -90,7 +97,18 @@ const MovingBanner = () => {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, []);
+  }, [isHovered]); // Add isHovered to dependency array
+
+  // Handle banner hover state to prevent disappearing when interacting
+  const handleMouseEnter = () => {
+    setIsVisible(true);
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    // Don't hide immediately when leaving, let the inactivity timer handle it
+  };
 
   return (
     <div
@@ -100,6 +118,8 @@ const MovingBanner = () => {
           ? 'opacity-100 translate-y-0'
           : 'opacity-0 translate-y-10 pointer-events-none'
       }`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="flex items-center space-x-2 bg-black/40 px-4 py-2 rounded-full border border-yellow-500/50 backdrop-blur-sm shadow-xl shadow-blue-900/30">
         <span className="text-yellow-400 font-bold text-sm mr-3">Contact Developer ShyrahDev</span>
