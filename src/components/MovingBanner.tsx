@@ -9,15 +9,50 @@ const MovingBanner = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [touchTimeout, setTouchTimeout] = useState<NodeJS.Timeout | null>(null);
 
+  // Function to handle deep linking for social apps
+  const handleSocialLinkClick = (appUrl: string, fallbackUrl: string, label: string) => {
+    // On mobile devices, try the app URL first, then fall back to web URL
+    if (typeof window !== 'undefined') {
+      // For iOS devices
+      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        // Try to open the app
+        window.location.href = appUrl;
+
+        // If the app isn't installed, fall back to the web URL after a delay
+        setTimeout(() => {
+          window.location.href = fallbackUrl;
+        }, 1000);
+      }
+      // For Android devices
+      else if (/Android/.test(navigator.userAgent)) {
+        // Create a hidden iframe to try to open the app
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = appUrl;
+        document.body.appendChild(iframe);
+
+        // After a short delay, remove the iframe and redirect to web fallback
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+          window.location.href = fallbackUrl;
+        }, 1000);
+      }
+      // For non-mobile devices or when app is not available, use the fallback URL
+      else {
+        window.location.href = fallbackUrl;
+      }
+    }
+  };
+
   const socialLinks = [
-    { href: "https://web.facebook.com/profile.php?id=61576682944507", icon: <Facebook size={20} />, label: "Facebook", username: "DevIsaacMaina" },
-    { href: "https://x.com/DevIsaacMaina", icon: <X size={20} />, label: "Twitter", username: "@DevIsaacMaina" },
-    { href: "https://www.instagram.com/devisaacmaina", icon: <Instagram size={20} />, label: "Instagram", username: "@devisaacmaina" },
-    { href: "https://www.linkedin.com/in/isaac-maina/?skipRedirect=true", icon: <Linkedin size={20} />, label: "LinkedIn", username: "Isaac Maina" },
-    { href: "https://github.com/IsaacMaina", icon: <Github size={20} />, label: "GitHub", username: "@IsaacMaina" },
-    { href: "https://wa.me/254758302725", icon: <MessageCircle size={20} />, label: "WhatsApp", username: "+254 758 302 725" },
-    { href: "https://mail.google.com/mail/?view=cm&to=mainaisaacwachira2000@gmail.com", icon: <Mail size={20} />, label: "Email", username: "mainaisaacwachira2000@gmail.com" },
-    { href: "tel:+254758302725", icon: <Phone size={20} />, label: "Phone", username: "+254 758 302 725" },
+    { href: "https://web.facebook.com/profile.php?id=61576682944507", appUrl: "fb://profile/61576682944507", icon: <Facebook size={20} />, label: "Facebook", username: "DevIsaacMaina" },
+    { href: "https://x.com/DevIsaacMaina", appUrl: "twitter://user?screen_name=DevIsaacMaina", icon: <X size={20} />, label: "Twitter", username: "@DevIsaacMaina" },
+    { href: "https://www.instagram.com/devisaacmaina", appUrl: "instagram://user?username=devisaacmaina", icon: <Instagram size={20} />, label: "Instagram", username: "@devisaacmaina" },
+    { href: "https://www.linkedin.com/in/isaac-maina/?skipRedirect=true", appUrl: "linkedin://profile/isaac-maina", icon: <Linkedin size={20} />, label: "LinkedIn", username: "Isaac Maina" },
+    { href: "https://github.com/IsaacMaina", appUrl: "github://", icon: <Github size={20} />, label: "GitHub", username: "@IsaacMaina" },
+    { href: "https://wa.me/254758302725", appUrl: "whatsapp://send?phone=+254758302725", icon: <MessageCircle size={20} />, label: "WhatsApp", username: "+254 758 302 725" },
+    { href: "mailto:mainaisaacwachira2000@gmail.com", appUrl: "googlegmail://", icon: <Mail size={20} />, label: "Email", username: "mainaisaacwachira2000@gmail.com" },
+    { href: "tel:+254758302725", appUrl: "tel:+254758302725", icon: <Phone size={20} />, label: "Phone", username: "+254 758 302 725" },
   ];
 
   // Set up event listeners for user activity
@@ -169,6 +204,10 @@ const MovingBanner = () => {
           {socialLinks.map((social, index) => (
             <div key={index} className="relative group inline-block">
               <a
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSocialLinkClick(social.appUrl, social.href, social.label);
+                }}
                 href={social.href}
                 target="_blank"
                 rel="noopener noreferrer"
