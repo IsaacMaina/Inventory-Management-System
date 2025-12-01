@@ -32,16 +32,16 @@ const UserDropdown = ({ className }: UserDropdownProps) => {
               {user.name ? user.name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
             </Avatar.Fallback>
           </Avatar.Root>
-          <span className="hidden md:inline text-sm text-gray-200">{user.name || user.email}</span>
+          <span className="hidden md:inline text-sm text-gray-800 dark:text-gray-200">{user.name || user.email}</span>
         </button>
       </Popover.Trigger>
 
       <Popover.Portal>
         <Popover.Content
           sideOffset={8}
-          className="z-50 w-56 p-0 bg-gray-800 rounded-lg shadow-lg border border-gray-700 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          className="z-50 w-56 p-0 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
         >
-          <div className="p-3 border-b border-gray-700">
+          <div className="p-3 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center space-x-3">
               <Avatar.Root className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center">
                 <Avatar.Fallback className="flex items-center justify-center h-full w-full text-white">
@@ -49,8 +49,8 @@ const UserDropdown = ({ className }: UserDropdownProps) => {
                 </Avatar.Fallback>
               </Avatar.Root>
               <div>
-                <p className="text-sm font-medium text-white">{user.name || 'User'}</p>
-                <p className="text-xs text-gray-400 truncate max-w-[120px]">{user.email}</p>
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{user.name || 'User'}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 truncate max-w-[120px]">{user.email}</p>
               </div>
             </div>
           </div>
@@ -58,7 +58,7 @@ const UserDropdown = ({ className }: UserDropdownProps) => {
           <div className="p-1">
             <button
               onClick={() => {}}
-              className="w-full flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md transition-colors cursor-pointer"
+              className="w-full flex items-center px-3 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-700 dark:hover:bg-gray-600 rounded-md transition-colors cursor-pointer"
             >
               <User className="h-4 w-4 mr-2" />
               Profile
@@ -69,7 +69,7 @@ const UserDropdown = ({ className }: UserDropdownProps) => {
                 toast.success('Logging out...');
                 await signOut({ callbackUrl: '/login' });
               }}
-              className="w-full flex items-center px-3 py-2 text-sm text-red-400 hover:bg-red-900/30 rounded-md mt-1 transition-colors cursor-pointer"
+              className="w-full flex items-center px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-md mt-1 transition-colors cursor-pointer"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Log out

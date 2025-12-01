@@ -299,79 +299,170 @@ const ProductsClient = ({ initialData }: { initialData: { products: Product[], c
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-gray-700">
-                        <th className="py-3 px-4 text-left text-sm font-medium text-gray-400 hidden md:table-cell">Product</th>
-                        <th className="py-3 px-4 text-left text-sm font-medium text-gray-400 hidden md:table-cell">SKU</th>
-                        <th className="py-3 px-4 text-left text-sm font-medium text-gray-400 hidden md:table-cell">Category</th>
-                        <th className="py-3 px-4 text-left text-sm font-medium text-gray-400 hidden md:table-cell">Supplier</th>
-                        <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">Stock</th>
-                        <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">Price</th>
-                        <th className="py-3 px-4 text-left text-sm font-medium text-gray-400 hidden md:table-cell">Status</th>
-                        <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paginatedProducts.map((product) => (
-                        <tr
-                          key={product.id}
-                          className="border-b border-gray-800 last:border-b-0 hover:bg-gray-700/30 transition-colors"
-                        >
-                              <td className="py-3 px-4 text-sm">
-                                <div className="font-medium hidden md:block">{product.name || 'Unnamed Product'}</div>
-                                <div className="font-medium md:hidden block truncate max-w-[100px]">{product.name || 'Unnamed Product'}</div>
-                                {product.description && (
-                                  <div className="hidden md:block text-xs text-gray-400 mt-1 truncate max-w-[150px]">{product.description}</div>
-                                )}
-                              </td>
-                              <td className="py-3 px-4 text-sm text-gray-400 hidden md:table-cell">{product.sku || 'N/A'}</td>
-                              <td className="py-3 px-4 text-sm text-gray-400 hidden md:table-cell">{product.category?.name || 'Uncategorized'}</td>
-                              <td className="py-3 px-4 text-sm text-gray-400 hidden md:table-cell">{product.supplier?.name || 'N/A'}</td>
-                              <td className="py-3 px-4 text-sm">
-                                <span className={`px-2 py-1 rounded-full ${
-                                  (product.quantity || 0) > (product.minQuantity || 0) ? 'bg-green-500/20 text-green-400' :
-                                  (product.quantity || 0) > 0 ? 'bg-yellow-500/20 text-yellow-400' :
-                                  'bg-red-500/20 text-red-400'
-                                }`}>
-                                  {typeof product.quantity === 'number' ? product.quantity.toLocaleString() : '0'}
-                                </span>
-                              </td>
-                              <td className="py-3 px-4 text-sm">${typeof product.price === 'number' ? product.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}</td>
-                              <td className="py-3 px-4 text-sm hidden md:table-cell">
-                                <span className={`px-2 py-1 rounded-full text-xs ${
-                                  (product.quantity || 0) > (product.minQuantity || 0)
-                                    ? 'bg-green-500/20 text-green-400'
-                                    : (product.quantity || 0) > 0
-                                    ? 'bg-yellow-500/20 text-yellow-400'
-                                    : 'bg-red-500/20 text-red-400'
-                                }`}>
-                                  {(product.quantity || 0) > (product.minQuantity || 0)
-                                    ? 'In Stock'
-                                    : (product.quantity || 0) > 0
-                                    ? 'Low Stock'
-                                    : 'Out of Stock'
-                                  }
-                                </span>
-                              </td>
-                              <td className="py-3 px-4 text-sm flex space-x-2">
-                                <button
-                                  className="p-1 rounded text-gray-500 cursor-not-allowed"
-                                  disabled
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </button>
-                                <button
-                                  className="p-1 rounded text-gray-500 cursor-not-allowed"
-                                  disabled
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </button>
-                              </td>
-                            </tr>
+                  {/* Responsive table layout - table view for desktop, card view for mobile */}
+                  <div className="hidden md:table w-full">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-gray-700">
+                          <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">Product</th>
+                          <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">SKU</th>
+                          <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">Category</th>
+                          <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">Supplier</th>
+                          <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">Stock</th>
+                          <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">Price</th>
+                          <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">Status</th>
+                          <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginatedProducts.map((product) => (
+                          <tr
+                            key={product.id}
+                            className="border-b border-gray-800 last:border-b-0 hover:bg-gray-700/30 transition-colors"
+                          >
+                            <td className="py-3 px-4 text-sm">
+                              <div className="font-medium">{product.name || 'Unnamed Product'}</div>
+                              {product.description && (
+                                <div className="text-xs text-gray-400 mt-1 truncate max-w-[150px]">{product.description}</div>
+                              )}
+                            </td>
+                            <td className="py-3 px-4 text-sm text-gray-400">{product.sku || 'N/A'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-400">{product.category?.name || 'Uncategorized'}</td>
+                            <td className="py-3 px-4 text-sm text-gray-400">{product.supplier?.name || 'N/A'}</td>
+                            <td className="py-3 px-4 text-sm">
+                              <span className={`px-2 py-1 rounded-full ${
+                                (product.quantity || 0) > (product.minQuantity || 0) ? 'bg-green-500/20 text-green-400' :
+                                (product.quantity || 0) > 0 ? 'bg-yellow-500/20 text-yellow-400' :
+                                'bg-red-500/20 text-red-400'
+                              }`}>
+                                {typeof product.quantity === 'number' ? product.quantity.toLocaleString() : '0'}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-sm">${typeof product.price === 'number' ? product.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}</td>
+                            <td className="py-3 px-4 text-sm">
+                              <span className={`px-2 py-1 rounded-full text-xs ${
+                                (product.quantity || 0) > (product.minQuantity || 0)
+                                  ? 'bg-green-500/20 text-green-400'
+                                  : (product.quantity || 0) > 0
+                                  ? 'bg-yellow-500/20 text-yellow-400'
+                                  : 'bg-red-500/20 text-red-400'
+                              }`}>
+                                {(product.quantity || 0) > (product.minQuantity || 0)
+                                  ? 'In Stock'
+                                  : (product.quantity || 0) > 0
+                                  ? 'Low Stock'
+                                  : 'Out of Stock'
+                                }
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-sm flex space-x-2">
+                              <button
+                                className="p-1 rounded text-gray-500 cursor-not-allowed"
+                                disabled
+                              >
+                                <Edit className="h-4 w-4" />
+                              </button>
+                              <button
+                                className="p-1 rounded text-gray-500 cursor-not-allowed"
+                                disabled
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </td>
+                          </tr>
                         ))}
-                    </tbody>
-                  </table>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Card view for mobile devices */}
+                  <div className="md:hidden space-y-4">
+                    {paginatedProducts.map((product) => (
+                      <div
+                        key={product.id}
+                        className="p-4 rounded-lg border border-gray-700 bg-gray-800/30 hover:bg-gray-700/40 transition-colors"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium truncate">{product.name || 'Unnamed Product'}</h3>
+                            {product.description && (
+                              <p className="text-xs text-gray-400 mt-1 truncate">{product.description}</p>
+                            )}
+
+                            <div className="grid grid-cols-2 gap-2 mt-3 text-sm">
+                              <div>
+                                <span className="text-gray-400">SKU:</span>
+                                <p className="truncate">{product.sku || 'N/A'}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-400">Category:</span>
+                                <p className="truncate">{product.category?.name || 'Uncategorized'}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-400">Supplier:</span>
+                                <p className="truncate">{product.supplier?.name || 'N/A'}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-400">Stock:</span>
+                                <p>
+                                  <span className={`px-1 py-0.5 rounded-full text-xs ${
+                                    (product.quantity || 0) > (product.minQuantity || 0) ? 'bg-green-500/20 text-green-400' :
+                                    (product.quantity || 0) > 0 ? 'bg-yellow-500/20 text-yellow-400' :
+                                    'bg-red-500/20 text-red-400'
+                                  }`}>
+                                    {typeof product.quantity === 'number' ? product.quantity.toLocaleString() : '0'}
+                                  </span>
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex justify-between items-center mt-3">
+                              <div>
+                                <span className="text-gray-400">Price:</span>
+                                <p>${typeof product.price === 'number' ? product.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}</p>
+                              </div>
+
+                              <span className={`px-2 py-1 rounded-full text-xs ${
+                                (product.quantity || 0) > (product.minQuantity || 0)
+                                  ? 'bg-green-500/20 text-green-400'
+                                  : (product.quantity || 0) > 0
+                                  ? 'bg-yellow-500/20 text-yellow-400'
+                                  : 'bg-red-500/20 text-red-400'
+                              }`}>
+                                {(product.quantity || 0) > (product.minQuantity || 0)
+                                  ? 'In Stock'
+                                  : (product.quantity || 0) > 0
+                                  ? 'Low Stock'
+                                  : 'Out of Stock'
+                                }
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex space-x-2 ml-2">
+                            <button
+                              className="p-1 rounded text-gray-500 cursor-not-allowed"
+                              disabled
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                            <button
+                              className="p-1 rounded text-gray-500 cursor-not-allowed"
+                              disabled
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {paginatedProducts.length === 0 && (
+                      <div className="text-center py-8 text-gray-400">
+                        No products found matching your criteria
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {paginatedProducts.length === 0 && (
