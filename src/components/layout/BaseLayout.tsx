@@ -44,9 +44,16 @@ const BaseLayout = ({ children }: BaseLayoutProps) => {
                   <Menu className="h-5 w-5" />
                 </button>
               )}
-              <h2 className="text-lg font-semibold capitalize">
+              <h2 className="text-lg font-semibold capitalize mr-4">
                 {pathname.split('/')[1] || 'dashboard'}
               </h2>
+            </div>
+
+            {/* Centered App Logo/Name that redirects to dashboard */}
+            <div className="absolute left-1/2 transform -translate-x-1/2">
+              <Link href="/dashboard" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400 hover:opacity-80 transition-opacity cursor-pointer">
+                InventoryPro
+              </Link>
             </div>
 
             <div className="flex items-center space-x-4">

@@ -6,6 +6,7 @@ import BaseLayout from '@/components/layout/BaseLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { FadeIn, SlideIn } from '@/components/animations/FramerAnimations';
 import { updateProfile, changePassword } from '@/lib/actions/settings';
+import { saveBusinessSettings } from '@/actions/businessSettingsActions';
 import toast from 'react-hot-toast';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
@@ -56,6 +57,16 @@ const SettingsClient = ({ initialUserData, error }: SettingsClientProps) => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
 
+  // State for business settings
+  const [businessSettings, setBusinessSettings] = useState({
+    businessName: '',
+    mpesaPaybill: '',
+    mpesaTill: '',
+    mpesaSendNumber: '',
+    mpesaPochiNumber: '',
+  });
+  const [businessSettingsLoading, setBusinessSettingsLoading] = useState(false);
+
   // Update form values when initial data or session changes
   useEffect(() => {
     if (session?.user) {
@@ -70,6 +81,29 @@ const SettingsClient = ({ initialUserData, error }: SettingsClientProps) => {
       });
     }
   }, [initialUserData, session]);
+
+  // Load business settings when component mounts
+  useEffect(() => {
+    const loadBusinessSettings = async () => {
+      try {
+        const response = await fetch('/api/business-settings');
+        if (response.ok) {
+          const data = await response.json();
+          setBusinessSettings({
+            businessName: data.businessName || '',
+            mpesaPaybill: data.mpesaPaybill || '',
+            mpesaTill: data.mpesaTill || '',
+            mpesaSendNumber: data.mpesaSendNumber || '',
+            mpesaPochiNumber: data.mpesaPochiNumber || '',
+          });
+        }
+      } catch (error) {
+        console.error('Error loading business settings:', error);
+      }
+    };
+
+    loadBusinessSettings();
+  }, []);
 
   // Handle profile update
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -229,6 +263,46 @@ const SettingsClient = ({ initialUserData, error }: SettingsClientProps) => {
     }
 
     return errors;
+  };
+
+  // Handle save business settings
+  const handleSaveBusinessSettings = async () => {
+    setBusinessSettingsLoading(true);
+
+    try {
+      // Get form values
+      const businessName = (document.querySelector('input[name="businessName"]') as HTMLInputElement)?.value || '';
+      const mpesaPaybill = (document.querySelector('input[name="mpesaPaybill"]') as HTMLInputElement)?.value || '';
+      const mpesaTill = (document.querySelector('input[name="mpesaTill"]') as HTMLInputElement)?.value || '';
+      const mpesaSendNumber = (document.querySelector('input[name="mpesaSendNumber"]') as HTMLInputElement)?.value || '';
+      const mpesaPochiNumber = (document.querySelector('input[name="mpesaPochiNumber"]') as HTMLInputElement)?.value || '';
+
+      const result = await saveBusinessSettings({
+        businessName,
+        mpesaPaybill,
+        mpesaTill,
+        mpesaSendNumber,
+        mpesaPochiNumber,
+      });
+
+      if (result.success) {
+        toast.success(result.message || 'Business settings saved successfully');
+        setBusinessSettings({
+          businessName: result.data?.businessName || businessName,
+          mpesaPaybill: result.data?.mpesaPaybill || mpesaPaybill,
+          mpesaTill: result.data?.mpesaTill || mpesaTill,
+          mpesaSendNumber: result.data?.mpesaSendNumber || mpesaSendNumber,
+          mpesaPochiNumber: result.data?.mpesaPochiNumber || mpesaPochiNumber,
+        });
+      } else {
+        toast.error(result.error || 'Failed to save business settings');
+      }
+    } catch (error) {
+      console.error('Error saving business settings:', error);
+      toast.error('An unexpected error occurred');
+    } finally {
+      setBusinessSettingsLoading(false);
+    }
   };
 
   // Handle input changes for profile
@@ -459,6 +533,77 @@ const SettingsClient = ({ initialUserData, error }: SettingsClientProps) => {
             </Card>
           </SlideIn>
 
+          {/* Business Settings */}
+          <SlideIn direction="up" className="md:col-span-2">
+            <Card className="glass border-gray-700 bg-gray-800/30 backdrop-blur-md">
+              <CardHeader>
+                <CardTitle>Business Settings</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Business Name</label>
+                    <input
+                      type="text"
+                      name="businessName"
+                      className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                      placeholder="e.g., ABC Enterprises"
+                      defaultValue=""
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">M-Pesa Paybill Number</label>
+                    <input
+                      type="text"
+                      name="mpesaPaybill"
+                      className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                      placeholder="e.g., 123456"
+                      defaultValue=""
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">M-Pesa Till Number</label>
+                    <input
+                      type="text"
+                      name="mpesaTill"
+                      className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                      placeholder="e.g., 123456"
+                      defaultValue=""
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">M-Pesa Send Money Number</label>
+                    <input
+                      type="text"
+                      name="mpesaSendNumber"
+                      className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                      placeholder="e.g., 07XX XXX XXX"
+                      defaultValue=""
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">M-Pesa Pochi La Biashara Number</label>
+                    <input
+                      type="text"
+                      name="mpesaPochiNumber"
+                      className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                      placeholder="e.g., 07XX XXX XXX"
+                      defaultValue=""
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-medium transition-colors"
+                  onClick={handleSaveBusinessSettings}
+                  disabled={businessSettingsLoading}
+                >
+                  {businessSettingsLoading ? 'Saving...' : 'Save Business Details'}
+                </button>
+              </CardContent>
+            </Card>
+          </SlideIn>
+
           {/* General Settings */}
           <SlideIn direction="up" className="md:col-span-2">
             <Card className="glass border-gray-700 bg-gray-800/30 backdrop-blur-md">
@@ -508,7 +653,7 @@ const SettingsClient = ({ initialUserData, error }: SettingsClientProps) => {
                   className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-medium transition-colors"
                   onClick={() => toast.success('General settings saved successfully')}
                 >
-                  Save Settings
+                  Save General Settings
                 </button>
               </CardContent>
             </Card>

@@ -5,10 +5,11 @@ import {
   inventoryItems as inventoryItemsTable,
   inventoryTransactions as inventoryTransactionsTable,
   categories as categoriesTable,
-  suppliers
+  suppliers,
+  sales
 } from '../../../drizzle/schema';
 
-import { eq, and, sql, gte, lt } from 'drizzle-orm';
+import { eq, and, sql, gte, lt, sum, count } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth/server';
 import { checkPermission, requirePermission } from '@/lib/auth/server';
 import { Permission } from '@/lib/authorization';
@@ -60,6 +61,23 @@ export async function getAnalyticsData(userContext: any): Promise<AnalyticsRespo
   // Require permission to access analytics
   await requirePermission(Permission.ANALYTICS_READ, userContext);
 
+  // For non-admin users, only get their data
+  let inventoryWhereCondition;
+  let salesWhereCondition;
+
+  if (userContext.role !== 'admin' && userContext.role !== 'manager') {
+    inventoryWhereCondition = and(
+      eq(inventoryItemsTable.isActive, true),
+      eq(inventoryItemsTable.userId, userContext.id)
+    );
+    salesWhereCondition = and(
+      eq(sales.cashierId, userContext.id)
+    );
+  } else {
+    inventoryWhereCondition = eq(inventoryItemsTable.isActive, true);
+    salesWhereCondition = undefined; // No restriction for admin/manager
+  }
+
   // Calculate total inventory value
   const dbInventoryItems = await db
     .select({
@@ -68,7 +86,7 @@ export async function getAnalyticsData(userContext: any): Promise<AnalyticsRespo
       categoryId: inventoryItemsTable.categoryId
     })
     .from(inventoryItemsTable)
-    .where(eq(inventoryItemsTable.isActive, true));
+    .where(inventoryWhereCondition);
 
   const totalInventoryValue = dbInventoryItems.reduce(
     (sum: number, item: { quantity: number; price: number }) => sum + item.quantity * (item.price / 100), // Convert back to dollars
@@ -100,7 +118,7 @@ export async function getAnalyticsData(userContext: any): Promise<AnalyticsRespo
       minQuantity: inventoryItemsTable.minQuantity,
     })
     .from(inventoryItemsTable)
-    .where(eq(inventoryItemsTable.isActive, true));
+    .where(inventoryWhereCondition);
 
   const lowStockItems = inventoryItemsForLowStock.filter(
     (item: { quantity: number; minQuantity: number }) => item.quantity <= item.minQuantity
@@ -120,7 +138,7 @@ export async function getAnalyticsData(userContext: any): Promise<AnalyticsRespo
       })
       .from(inventoryItemsTable)
       .leftJoin(categoriesTable, eq(inventoryItemsTable.categoryId, categoriesTable.id))
-      .where(eq(inventoryItemsTable.isActive, true));
+      .where(inventoryWhereCondition);
 
     inventoryItemsWithCategories.forEach((item: any) => {
       if (item.category?.name) {
@@ -145,6 +163,45 @@ export async function getAnalyticsData(userContext: any): Promise<AnalyticsRespo
     }
   }
 
+  // Get POS sales metrics
+  const todaySalesResult = await db
+    .select({
+      totalSales: count(sales.id).as('total_sales'),
+      totalAmount: sum(sales.totalAmount).as('total_amount'),
+    })
+    .from(sales)
+    .where(
+      salesWhereCondition
+        ? and(
+            gte(sales.createdAt, today),
+            lt(sales.createdAt, tomorrow),
+            eq(sales.status, 'paid'),
+            salesWhereCondition
+          )
+        : and(
+            gte(sales.createdAt, today),
+            lt(sales.createdAt, tomorrow),
+            eq(sales.status, 'paid')
+          )
+    );
+
+  const todaySales = Number(todaySalesResult[0]?.totalSales || 0);
+  const todaySalesAmount = Number(todaySalesResult[0]?.totalAmount || 0) / 100; // Convert from cents to dollars
+
+  // Get total sales count
+  const totalSalesResult = await db
+    .select({
+      totalSales: count(sales.id).as('total_sales'),
+    })
+    .from(sales)
+    .where(
+      salesWhereCondition
+        ? and(eq(sales.status, 'paid'), salesWhereCondition)
+        : eq(sales.status, 'paid')
+    );
+
+  const totalSales = Number(totalSalesResult[0]?.totalSales || 0);
+
   // Prepare analytics metrics
   const analyticsMetrics = [
     {
@@ -157,22 +214,25 @@ export async function getAnalyticsData(userContext: any): Promise<AnalyticsRespo
       icon: '💰'
     },
     {
-      title: 'Stock Transactions Today',
-      value: stockTransactionsToday.toString(),
+      title: 'Today\'s Revenue',
+      value: new Intl.NumberFormat('en-KE', {
+        style: 'currency',
+        currency: 'KES'
+      }).format(todaySalesAmount),
+      change: '+8.2%',
+      icon: '💵'
+    },
+    {
+      title: 'Today\'s Sales',
+      value: todaySales.toString(),
       change: '+5.3%',
-      icon: '📊'
+      icon: '🛒'
     },
     {
       title: 'Low Stock Items',
       value: `${lowStockItems} Items`,
       change: '-1.2%',
       icon: '⚠️'
-    },
-    {
-      title: 'Top Category',
-      value: topCategory,
-      change: '+3.1%',
-      icon: '🔝'
     },
   ];
 

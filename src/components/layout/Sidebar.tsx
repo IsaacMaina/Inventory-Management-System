@@ -13,7 +13,8 @@ import {
   Sun,
   Home,
   TrendingUp,
-  FileText
+  FileText,
+  CreditCard
 } from 'lucide-react';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import Link from 'next/link';
@@ -31,6 +32,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
   // Navigation items
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
+    { name: 'POS', href: '/pos', icon: CreditCard },
     { name: 'Products', href: '/products', icon: Package },
     { name: 'Reports', href: '/reports', icon: FileText },
     { name: 'Analytics', href: '/analytics', icon: TrendingUp },

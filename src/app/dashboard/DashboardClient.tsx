@@ -147,12 +147,153 @@ const DashboardClient = ({ initialData }: { initialData: DashboardData | null })
           </div>
         </FadeIn>
 
+        {/* Quick Access Cards */}
+        <StaggerContainer staggerAmount={0.1}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* POS Card */}
+            <StaggerItem>
+              <motion.div
+                whileHover={{ y: -5, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="cursor-pointer"
+                onClick={() => window.location.href = '/pos'}
+              >
+                <Card className="glass bg-gradient-to-br from-blue-900/30 to-blue-700/30 backdrop-blur-md border border-blue-500/30 h-full">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg text-blue-300">Point of Sale</CardTitle>
+                      <div className="bg-blue-500/20 p-2 rounded-lg">
+                        <span className="text-2xl">💳</span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-300 mb-4">Process sales and manage transactions</p>
+                    <div className="flex items-center text-blue-400 text-sm font-medium">
+                      <span>Start selling</span>
+                      <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </StaggerItem>
+
+            {/* Analytics Card */}
+            <StaggerItem>
+              <motion.div
+                whileHover={{ y: -5, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="cursor-pointer"
+                onClick={() => window.location.href = '/analytics'}
+              >
+                <Card className="glass bg-gradient-to-br from-green-900/30 to-green-700/30 backdrop-blur-md border border-green-500/30 h-full">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg text-green-300">Analytics</CardTitle>
+                      <div className="bg-green-500/20 p-2 rounded-lg">
+                        <span className="text-2xl">📊</span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-300 mb-4">View insights and trends</p>
+                    <div className="flex items-center text-green-400 text-sm font-medium">
+                      <span>View insights</span>
+                      <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </StaggerItem>
+
+            {/* Reports Card */}
+            <StaggerItem>
+              <motion.div
+                whileHover={{ y: -5, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="cursor-pointer"
+                onClick={() => window.location.href = '/reports'}
+              >
+                <Card className="glass bg-gradient-to-br from-purple-900/30 to-purple-700/30 backdrop-blur-md border border-purple-500/30 h-full">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg text-purple-300">Reports</CardTitle>
+                      <div className="bg-purple-500/20 p-2 rounded-lg">
+                        <span className="text-2xl">📋</span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-300 mb-4">Generate and view reports</p>
+                    <div className="flex items-center text-purple-400 text-sm font-medium">
+                      <span>Generate reports</span>
+                      <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </StaggerItem>
+
+            {/* Settings Card */}
+            <StaggerItem>
+              <motion.div
+                whileHover={{ y: -5, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="cursor-pointer"
+                onClick={() => window.location.href = '/settings'}
+              >
+                <Card className="glass bg-gradient-to-br from-amber-900/30 to-amber-700/30 backdrop-blur-md border border-amber-500/30 h-full">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg text-amber-300">Settings</CardTitle>
+                      <div className="bg-amber-500/20 p-2 rounded-lg">
+                        <span className="text-2xl">⚙️</span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-300 mb-4">Manage account and preferences</p>
+                    <div className="flex items-center text-amber-400 text-sm font-medium">
+                      <span>Configure settings</span>
+                      <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </StaggerItem>
+          </div>
+        </StaggerContainer>
+
         {/* Metrics Grid */}
         <StaggerContainer staggerAmount={0.1}>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {metricsWithChanges.map((metric) => (
               <StaggerItem key={metric.title}>
-                <HoverCard>
+                <motion.div
+                  whileHover={{ y: -5, scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    // Redirect based on the metric title
+                    if (metric.title === 'Total Products') {
+                      window.location.href = '/products';
+                    } else if (metric.title === 'Low Stock Items') {
+                      window.location.href = '/products';
+                    } else if (metric.title === 'Total Value') {
+                      window.location.href = '/analytics';
+                    } else if (metric.title === 'Active Suppliers') {
+                      window.location.href = '/products';
+                    }
+                  }}
+                >
                   <Card className="glass bg-gradient-subtle backdrop-blur-md h-full">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
@@ -177,7 +318,7 @@ const DashboardClient = ({ initialData }: { initialData: DashboardData | null })
                       </p>
                     </CardContent>
                   </Card>
-                </HoverCard>
+                </motion.div>
               </StaggerItem>
             ))}
           </div>

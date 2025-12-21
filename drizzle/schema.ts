@@ -14,6 +14,8 @@ import { relations } from 'drizzle-orm/relations';
 // PostgreSQL enums for our application
 export const userRoleEnum = pgEnum('user_role', ['admin', 'user', 'manager', 'viewer']);
 export const inventoryTransactionTypeEnum = pgEnum('transaction_type', ['in', 'out', 'adjustment']);
+export const paymentMethodEnum = pgEnum('payment_method', ['mpesa_send', 'mpesa_paybill', 'mpesa_till', 'mpesa_pochi']);
+export const saleStatusEnum = pgEnum('sale_status', ['pending', 'paid', 'failed']);
 
 // Users table
 export const users = pgTable('users', {
@@ -168,7 +170,7 @@ export const inventoryItems = pgTable('inventory_items', {
   };
 });
 
-export const inventoryItemsRelations = relations(inventoryItems, ({ one }) => ({
+export const inventoryItemsRelations = relations(inventoryItems, ({ one, many }) => ({
   user: one(users, {
     fields: [inventoryItems.userId],
     references: [users.id],
@@ -181,6 +183,7 @@ export const inventoryItemsRelations = relations(inventoryItems, ({ one }) => ({
     fields: [inventoryItems.supplierId],
     references: [suppliers.id],
   }),
+  saleItems: many(saleItems),
 }));
 
 export const inventoryTransactions = pgTable('inventory_transactions', {
@@ -231,5 +234,66 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
   user: one(users, {
     fields: [notifications.userId],
     references: [users.id],
+  }),
+}));
+
+// Business settings table for storing business details like M-Pesa numbers
+export const businessSettings = pgTable('business_settings', {
+  id: text('id').primaryKey().notNull().default(sql`gen_random_uuid()`),
+  businessName: text('business_name'),
+  mpesaPaybill: text('mpesa_paybill'),
+  mpesaTill: text('mpesa_till'),
+  mpesaSendNumber: text('mpesa_send_number'),
+  mpesaPochiNumber: text('mpesa_pochi_number'),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }), // Each user can have their own business settings
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+});
+
+export const businessSettingsRelations = relations(businessSettings, ({ one }) => ({
+  user: one(users, {
+    fields: [businessSettings.userId],
+    references: [users.id],
+  }),
+}));
+
+// Sales table for POS functionality
+export const sales = pgTable('sales', {
+  id: text('id').primaryKey().notNull().default(sql`gen_random_uuid()`),
+  totalAmount: integer('total_amount').notNull(), // Stored as integer (cents) for precision
+  paymentMethod: paymentMethodEnum('payment_method').notNull(),
+  mpesaReference: text('mpesa_reference'), // M-Pesa transaction reference
+  status: saleStatusEnum('status').default('pending').notNull(),
+  cashierId: text('cashier_id').notNull().references(() => users.id, { onDelete: 'restrict' }),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+});
+
+export const salesRelations = relations(sales, ({ one, many }) => ({
+  cashier: one(users, {
+    fields: [sales.cashierId],
+    references: [users.id],
+  }),
+  items: many(saleItems),
+}));
+
+// Sale items table for POS functionality
+export const saleItems = pgTable('sale_items', {
+  id: text('id').primaryKey().notNull().default(sql`gen_random_uuid()`),
+  saleId: text('sale_id').notNull().references(() => sales.id, { onDelete: 'cascade' }),
+  productId: text('product_id').notNull().references(() => inventoryItems.id, { onDelete: 'restrict' }),
+  quantity: integer('quantity').notNull(),
+  priceAtSale: integer('price_at_sale').notNull(), // Price at time of sale (in cents)
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+});
+
+export const saleItemsRelations = relations(saleItems, ({ one }) => ({
+  sale: one(sales, {
+    fields: [saleItems.saleId],
+    references: [sales.id],
+  }),
+  product: one(inventoryItems, {
+    fields: [saleItems.productId],
+    references: [inventoryItems.id],
   }),
 }));
